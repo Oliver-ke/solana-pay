@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import HeadComponent from '../components/Head';
 import Product from "../components/Product";
+import CreateProduct from "../components/CreateProduct";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
@@ -11,7 +12,9 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
   const { publicKey } = useWallet();
+  const isOwner = (publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false);
   const [products, setProducts] = useState([]);
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (publicKey) {
@@ -41,14 +44,21 @@ const App = () => {
 
   return (
     <div className="App">
+      <HeadComponent />
       <div className="container">
         <header className="header-container">
-          <p className="header"> 😳 Emoji Store Stocks 😈</p>
-          <p className="sub-text">Your one stop shop for cool emoji</p>
+          <p className="header"> 😳 Buildspace Emoji Store 😈</p>
+          <p className="sub-text">The only emoji store that accepts shitcoins</p>
+
+          {isOwner && (
+            <button className="create-product-button" onClick={() => setCreating(!creating)}>
+              {creating ? "Close" : "Create Product"}
+            </button>
+          )}
         </header>
 
         <main>
-          {/* We only render the connect button if public key doesn't exist */}
+          {creating && <CreateProduct />}
           {publicKey ? renderItemBuyContainer() : renderNotConnectedContainer()}
         </main>
 
